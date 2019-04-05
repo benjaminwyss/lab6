@@ -24,6 +24,7 @@
         <div class="card-body">
           <h5 class="card-title">{{stop.name}}</h5>
           <p class="card-text">{{stop.description}}</p>
+          <p class="card-text">{{stop.distance.toFixed(5)}} km</p>
         </div>
       </div>
 
@@ -55,13 +56,29 @@
       data:
       {
         stops: [],
-        numStops: 10
+        numStops: 10,
+        latitude: 0,
+        longitude: 0
       },
       computed:
       {
         filteredStops: function()
         {
           return this.stops.slice(0, this.numStops)
+        }
+      },
+      methods:
+      {
+        //Distance function implementation based on https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
+        distance: function(lat, lon)
+        {
+          let radius = 6371
+          let latDistance = (this.latitude - lat) * (Math.PI/180)
+          let lonDistance = (this.longitude - lon) * (Math.PI/180)
+          let a = Math.sin(latDistance/2) * Math.sin(latDistance/2) + Math.cos((lat) * (Math.PI/180)) * Math.cos((this.latitude) * (Math.PI/180)) * Math.sin(lonDistance/2) * Math.sin(lonDistance/2)
+          let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+          let d = radius * c
+          return d
         }
       },
       mounted: function()
@@ -75,6 +92,19 @@
           {
               app.stops = myJson;
           });
+        navigator.geolocation.watchPosition(function (position)
+        {
+          app.latitude = position.coords.latitude
+          app.longitude = position.coords.longitude
+          app.stops.forEach(stop =>
+          {
+            stop.distance = app.distance(stop.lat, stop.lon)
+          })
+          app.stops.sort((stopA, stopB) =>
+          {
+            return(stopA.distance - stopB.distance)
+          })
+        })  
       }
     })
    </script>
