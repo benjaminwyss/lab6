@@ -14,11 +14,13 @@
  </head>
  <body>
 
+  <br>
   <div class="container">
     <div id="app">
-      <input v-model.number="numStops" type="number">
-
-      <div v-for="stop in stops.slice(0, numStops)" :key="stop.id" class="card" style="width: 18rem;">
+      <p>Number of stops to show:&nbsp
+        <input v-model.number="numStops" type="number">
+      </p>
+      <div v-for="stop in filteredStops" :key="stop.id" class="card" style="width: 36rem;">
         <div class="card-body">
           <h5 class="card-title">{{stop.name}}</h5>
           <p class="card-text">{{stop.description}}</p>
@@ -59,7 +61,7 @@
       {
         filteredStops: function()
         {
-          return app.stops.slice(0, app.numStops);
+          return this.stops.slice(0, this.numStops)
         }
       },
       mounted: function()
