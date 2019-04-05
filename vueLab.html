@@ -64,6 +64,14 @@
       {
         filteredStops: function()
         {
+          this.stops.forEach(stop =>
+          {
+            stop.distance = this.distance(stop.lat, stop.lon)
+          })
+          this.stops.sort((stopA, stopB) =>
+          {
+            return(stopA.distance - stopB.distance)
+          })
           return this.stops.slice(0, this.numStops)
         }
       },
@@ -79,7 +87,19 @@
           let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
           let d = radius * c
           return d
+        },
+        geolocate: function()
+        {
+          navigator.geolocation.watchPosition(function (position)
+          {
+            app.latitude = position.coords.latitude
+            app.longitude = position.coords.longitude
+          })
         }
+      },
+      beforeMount()
+      {
+        this.geolocate()
       },
       mounted: function()
       {
@@ -92,19 +112,6 @@
           {
               app.stops = myJson;
           });
-        navigator.geolocation.watchPosition(function (position)
-        {
-          app.latitude = position.coords.latitude
-          app.longitude = position.coords.longitude
-          app.stops.forEach(stop =>
-          {
-            stop.distance = app.distance(stop.lat, stop.lon)
-          })
-          app.stops.sort((stopA, stopB) =>
-          {
-            return(stopA.distance - stopB.distance)
-          })
-        })  
       }
     })
    </script>
