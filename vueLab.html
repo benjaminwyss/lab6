@@ -16,11 +16,15 @@
 
   <div class="container">
     <div id="app">
-      <ul>
-        <li v-for="stop in stops" :key="stop.id">
-          {{ stop.name }}
-        </li>
-      </ul>
+      <input v-model.number="numStops" type="number">
+
+      <div v-for="stop in stops.slice(0, numStops)" :key="stop.id" class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h5 class="card-title">{{stop.name}}</h5>
+          <p class="card-text">{{stop.description}}</p>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -48,7 +52,15 @@
       el: '#app',
       data:
       {
-        stops: []
+        stops: [],
+        numStops: 10
+      },
+      computed:
+      {
+        filteredStops: function()
+        {
+          return app.stops.slice(0, app.numStops);
+        }
       },
       mounted: function()
       {
